@@ -49,9 +49,20 @@ namespace TrainingSchedule.ConsoleApp
 
             Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
 
+            var answer = string.Empty;
+
+            if (string.Equals(messageText, "/start"))
+            {
+                answer = $"Привет, {message!.From?.FirstName}!";
+            }
+            else
+            {
+                answer = "You said:\n" + messageText;
+            }
+
             Message sentMessage = await botClient.SendTextMessageAsync(
                 chatId: chatId,
-                text: "You said:\n" + messageText,
+                text: answer,
                 cancellationToken: cancellationToken);
         }
 
