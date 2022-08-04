@@ -1,6 +1,4 @@
-﻿using Telegram.Abstractions;
-
-namespace TrainingSchedule.Services
+﻿namespace TrainingSchedule.Services.MessageService
 {
     public class MessageHandler : IMessageHandler
     {

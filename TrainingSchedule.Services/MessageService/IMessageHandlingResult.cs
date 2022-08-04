@@ -1,4 +1,4 @@
-﻿namespace Telegram.Abstractions
+﻿namespace TrainingSchedule.Services.MessageService
 {
     public interface IMessageHandlingResult
     {

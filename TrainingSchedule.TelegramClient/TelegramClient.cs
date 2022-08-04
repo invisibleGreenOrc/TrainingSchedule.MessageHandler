@@ -1,27 +1,30 @@
-﻿using Telegram.Abstractions;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TrainingSchedule.Domain;
 
 namespace TrainingSchedule.Telegram
 {
-    public class TelegramClient
+    public class TelegramClient : IBotClient
     {
-        private readonly string _telegramToken;
-        private readonly IMessageHandler _messageHandler;
+        private readonly TelegramBotClient _botClient;
 
-        public TelegramClient(string telegramToken, IMessageHandler messageHandler)
+        public event Func<long, long, string, Task> MessageReceived;
+
+        public TelegramClient(string telegramToken)
         {
-            _telegramToken = telegramToken ?? throw new ArgumentNullException("Не задан токен.");
-            _messageHandler = messageHandler ?? throw new ArgumentNullException("Не задан messageHandler.");
+            if (telegramToken is null)
+            {
+                throw new ArgumentNullException("Не задан токен.");
+            }
+
+            _botClient = new TelegramBotClient(telegramToken);
         }
 
         public async Task Run()
         {
-            var botClient = new TelegramBotClient(_telegramToken);
-
             using var cts = new CancellationTokenSource();
 
             // StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
@@ -30,14 +33,14 @@ namespace TrainingSchedule.Telegram
                 // receive all update types
                 AllowedUpdates = Array.Empty<UpdateType>()
             };
-            botClient.StartReceiving(
+            _botClient.StartReceiving(
                         updateHandler: HandleUpdateAsync,
                         pollingErrorHandler: HandlePollingErrorAsync,
                         receiverOptions: receiverOptions,
                         cancellationToken: cts.Token
                     );
 
-            var me = await botClient.GetMeAsync();
+            var me = await _botClient.GetMeAsync();
 
             Console.WriteLine($"Start listening for @{me.Username}");
             Console.ReadLine();
@@ -59,12 +62,7 @@ namespace TrainingSchedule.Telegram
 
             Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
 
-            var answer = await _messageHandler.HandleMessageAsync(userId, messageText);
-
-            Message sentMessage = await botClient.SendTextMessageAsync(
-                chatId: chatId,
-                text: answer.MessageText,
-                cancellationToken: cancellationToken);
+            MessageReceived?.Invoke(userId, chatId, messageText);
         }
 
         private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
@@ -78,6 +76,14 @@ namespace TrainingSchedule.Telegram
 
             Console.WriteLine(ErrorMessage);
             return Task.CompletedTask;
+        }
+
+        public async Task SendMessageAsync(long chatId, string message)
+        {
+            Message sentMessage = await _botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: message,
+                cancellationToken: default);
         }
     }
 }

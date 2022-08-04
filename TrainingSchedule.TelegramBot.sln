@@ -13,9 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingSchedule.Services",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingSchedule.ConsoleApp", "TrainingSchedule.ConsoleApp\TrainingSchedule.ConsoleApp.csproj", "{279FC929-22E6-442E-8732-2F0D96FA2D9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainingSchedule.Telegram", "TrainingSchedule.TelegramClient\TrainingSchedule.Telegram.csproj", "{F68853DB-7C1C-4757-A3A7-4427583069C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingSchedule.Telegram", "TrainingSchedule.TelegramClient\TrainingSchedule.Telegram.csproj", "{F68853DB-7C1C-4757-A3A7-4427583069C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telegram.Abstractions", "Telegram.Abstractions\Telegram.Abstractions.csproj", "{8DA6EFCF-3A37-4383-B4DD-AE6AECCB5961}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainingSchedule.Domain", "TrainingSchedule.Domain\TrainingSchedule.Domain.csproj", "{0B5431A1-033B-4A3D-93EA-9C57D1D166E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainingSchedule.ApiClient", "TrainingSchedule.APIClient\TrainingSchedule.ApiClient.csproj", "{AC396E4C-6FA7-4F53-B573-112A7E1A78BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +37,14 @@ Global
 		{F68853DB-7C1C-4757-A3A7-4427583069C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F68853DB-7C1C-4757-A3A7-4427583069C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F68853DB-7C1C-4757-A3A7-4427583069C4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8DA6EFCF-3A37-4383-B4DD-AE6AECCB5961}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8DA6EFCF-3A37-4383-B4DD-AE6AECCB5961}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8DA6EFCF-3A37-4383-B4DD-AE6AECCB5961}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8DA6EFCF-3A37-4383-B4DD-AE6AECCB5961}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B5431A1-033B-4A3D-93EA-9C57D1D166E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B5431A1-033B-4A3D-93EA-9C57D1D166E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B5431A1-033B-4A3D-93EA-9C57D1D166E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B5431A1-033B-4A3D-93EA-9C57D1D166E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC396E4C-6FA7-4F53-B573-112A7E1A78BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC396E4C-6FA7-4F53-B573-112A7E1A78BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC396E4C-6FA7-4F53-B573-112A7E1A78BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC396E4C-6FA7-4F53-B573-112A7E1A78BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,7 +53,8 @@ Global
 		{703C5CD5-D2EE-444F-84DD-76B0BE31B4E0} = {A65FB6AF-9B0A-4BEF-84EB-1635A7E3ABDE}
 		{279FC929-22E6-442E-8732-2F0D96FA2D9D} = {1CA6493F-10C2-4362-90E0-43D74A337292}
 		{F68853DB-7C1C-4757-A3A7-4427583069C4} = {068DDE25-9165-4E39-BDA3-18A73D29F959}
-		{8DA6EFCF-3A37-4383-B4DD-AE6AECCB5961} = {068DDE25-9165-4E39-BDA3-18A73D29F959}
+		{0B5431A1-033B-4A3D-93EA-9C57D1D166E9} = {A65FB6AF-9B0A-4BEF-84EB-1635A7E3ABDE}
+		{AC396E4C-6FA7-4F53-B573-112A7E1A78BF} = {068DDE25-9165-4E39-BDA3-18A73D29F959}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8DCE4032-92E6-47D3-BE60-CFC1ADA0861C}
