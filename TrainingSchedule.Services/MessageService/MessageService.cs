@@ -47,7 +47,7 @@ namespace TrainingSchedule.Services.MessageService
             {
                 if (_userStates.TryGetValue(botUserId, out var state) && state == "/start.ChooseName")
                 {
-                     var roles = await _apiClient.GetRolesAsync();
+                    var roles = await _apiClient.GetRolesAsync();
 
                     if (roles.Count == 0)
                     {
@@ -76,8 +76,8 @@ namespace TrainingSchedule.Services.MessageService
 
                     await SendMessageAsync(chatId, $"Выбери свою роль", answers);
                 }
-                else if(_userStates.TryGetValue(botUserId, out state) && state == "/start.ChooseRole")
-            {
+                else if (_userStates.TryGetValue(botUserId, out state) && state == "/start.ChooseRole")
+                {
                     var newUser = new UserForCreationDto
                     {
                         BotUserId = botUserId,
@@ -92,36 +92,6 @@ namespace TrainingSchedule.Services.MessageService
                     _userNames.Remove(botUserId);
                 }
             }
-
-            //string? answerText;
-
-            //if (string.Equals(message, "/start"))
-            //{
-            //    answerText = $"Привет!";
-            //}
-            //else
-            //{
-            //    answerText = "You said:\n" + message;
-            //}
-
-            //var answer = new MessageHandlingResult
-            //{
-            //    MessageText = answerText,
-            //    AllowedAnswer = null
-            //};
-
-            //await SendMessageAsync(chatId, answerText + "!!!!!!");
-
-            //var disciplines = await _apiClient.GetDisciplines();
-
-            //string response = string.Empty;
-
-            //foreach (var item in disciplines)
-            //{
-            //    response = response + item.Name;
-            //}
-
-            //await SendMessageAsync(chatId, response);
         }
 
         private async Task SendMessageAsync(long chatId, string message)
