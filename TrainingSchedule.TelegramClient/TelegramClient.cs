@@ -1,9 +1,12 @@
-﻿using Telegram.Bot;
+﻿using System.Data;
+using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 using TrainingSchedule.Domain;
+using TrainingSchedule.Domain.Entities;
 
 namespace TrainingSchedule.Telegram
 {
@@ -50,19 +53,37 @@ namespace TrainingSchedule.Telegram
 
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            if (update.Message?.Text is null)
+            long chatId, userId;
+            string? messageText;
+
+            if (update.Message?.Text is not null)
+            {
+                var message = update.Message;
+                chatId = message.Chat.Id;
+                userId = message.From.Id;
+                messageText = update.Message.Text;
+
+                Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
+
+                MessageReceived?.Invoke(userId, chatId, messageText);
+            }
+            else if (update.CallbackQuery is not null)
+            {
+                var callbackQuery = update.CallbackQuery;
+                chatId = callbackQuery.Message.Chat.Id;
+                userId = callbackQuery.From.Id;
+                messageText = callbackQuery.Data;
+
+                Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
+
+                MessageReceived?.Invoke(userId, chatId, messageText);
+
+                await botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id);
+            }
+            else
             {
                 return;
             }
-
-            var message = update.Message;
-            var messageText = message.Text;
-            var chatId = message.Chat.Id;
-            var userId = message.From.Id;
-
-            Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
-
-            MessageReceived?.Invoke(userId, chatId, messageText);
         }
 
         private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
@@ -75,6 +96,7 @@ namespace TrainingSchedule.Telegram
             };
 
             Console.WriteLine(ErrorMessage);
+
             return Task.CompletedTask;
         }
 
@@ -83,6 +105,19 @@ namespace TrainingSchedule.Telegram
             Message sentMessage = await _botClient.SendTextMessageAsync(
                 chatId: chatId,
                 text: message,
+                cancellationToken: default);
+        }
+
+        public async Task SendMessageAsync(long chatId, string message, IAllowedAnswers allowedAnswers)
+        {
+            var buttons = allowedAnswers.Items.Select((role, index) => InlineKeyboardButton.WithCallbackData($"{index + 1}. {role.Name}", role.Value));
+
+            var inlineKeyboard = new InlineKeyboardMarkup(buttons);
+
+            Message sentMessage = await _botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: message,
+                replyMarkup: inlineKeyboard,
                 cancellationToken: default);
         }
     }

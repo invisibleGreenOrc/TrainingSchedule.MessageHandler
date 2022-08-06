@@ -1,4 +1,4 @@
-﻿namespace TrainingSchedule.Domain
+﻿namespace TrainingSchedule.Domain.Entities
 {
     public class Discipline
     {

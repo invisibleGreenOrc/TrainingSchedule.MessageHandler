@@ -15,9 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingSchedule.ConsoleApp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingSchedule.Telegram", "TrainingSchedule.TelegramClient\TrainingSchedule.Telegram.csproj", "{F68853DB-7C1C-4757-A3A7-4427583069C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainingSchedule.Domain", "TrainingSchedule.Domain\TrainingSchedule.Domain.csproj", "{0B5431A1-033B-4A3D-93EA-9C57D1D166E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingSchedule.Domain", "TrainingSchedule.Domain\TrainingSchedule.Domain.csproj", "{0B5431A1-033B-4A3D-93EA-9C57D1D166E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainingSchedule.ApiClient", "TrainingSchedule.APIClient\TrainingSchedule.ApiClient.csproj", "{AC396E4C-6FA7-4F53-B573-112A7E1A78BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingSchedule.ApiClient", "TrainingSchedule.APIClient\TrainingSchedule.ApiClient.csproj", "{AC396E4C-6FA7-4F53-B573-112A7E1A78BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainingSchedule.Contracts", "TrainingSchedule.Contracts\TrainingSchedule.Contracts.csproj", "{E2D8879D-690E-4130-9C43-F53F6529D5E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{AC396E4C-6FA7-4F53-B573-112A7E1A78BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC396E4C-6FA7-4F53-B573-112A7E1A78BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC396E4C-6FA7-4F53-B573-112A7E1A78BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2D8879D-690E-4130-9C43-F53F6529D5E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2D8879D-690E-4130-9C43-F53F6529D5E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2D8879D-690E-4130-9C43-F53F6529D5E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2D8879D-690E-4130-9C43-F53F6529D5E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{F68853DB-7C1C-4757-A3A7-4427583069C4} = {068DDE25-9165-4E39-BDA3-18A73D29F959}
 		{0B5431A1-033B-4A3D-93EA-9C57D1D166E9} = {A65FB6AF-9B0A-4BEF-84EB-1635A7E3ABDE}
 		{AC396E4C-6FA7-4F53-B573-112A7E1A78BF} = {068DDE25-9165-4E39-BDA3-18A73D29F959}
+		{E2D8879D-690E-4130-9C43-F53F6529D5E4} = {A65FB6AF-9B0A-4BEF-84EB-1635A7E3ABDE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8DCE4032-92E6-47D3-BE60-CFC1ADA0861C}
