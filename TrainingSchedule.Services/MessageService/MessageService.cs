@@ -1,4 +1,5 @@
-﻿using TrainingSchedule.Contracts;
+﻿using System.Data;
+using TrainingSchedule.Contracts;
 using TrainingSchedule.Domain;
 using TrainingSchedule.Domain.Entities;
 
@@ -10,6 +11,7 @@ namespace TrainingSchedule.Services.MessageService
         private readonly IApiClient _apiClient;
         private Dictionary<long, string> _userStates = new();
         private Dictionary<long, string> _userNames = new();
+        private Dictionary<long, (int disciplineId, int levelId, DateOnly date, TimeOnly time)> _userLesson = new();
 
         public MessageService(IBotClient botClient, IApiClient apiClient)
         {
@@ -42,6 +44,31 @@ namespace TrainingSchedule.Services.MessageService
                     await SendMessageAsync(chatId, $"Добро пожаловать!" +
                         $"\nКак тебя зовут?");
                 }
+            }
+            else if (message == "/create_drill")
+            {
+                _userStates[botUserId] = "/create_drill.ChooseDiscipline";
+
+                var discilpines = await _apiClient.GetDisciplinesAsync();
+
+                var answers = new AllowedAnswers
+                {
+                    ItemsInRow = 1,
+                    Items = new List<IAnswerItem>()
+                };
+
+                foreach (var discipline in discilpines)
+                {
+                    var answerItem = new AnswerItem
+                    {
+                        Name = discipline.Name,
+                        Value = discipline.Id.ToString()
+                    };
+
+                    answers.Items.Add(answerItem);
+                }
+
+                await SendMessageAsync(chatId, "Выбери дисциплину", answers);
             }
             else
             {
@@ -90,6 +117,112 @@ namespace TrainingSchedule.Services.MessageService
 
                     _userStates.Remove(botUserId);
                     _userNames.Remove(botUserId);
+                }
+                else if (_userStates.TryGetValue(botUserId, out state) && state == "/create_drill.ChooseDiscipline")
+                {
+                    _userLesson[botUserId] = (disciplineId: int.Parse(message), 0, DateOnly.MinValue, TimeOnly.MinValue);
+
+                    _userStates[botUserId] = "/create_drill.ChooseLevel";
+
+                    var answers = new AllowedAnswers
+                    {
+                        ItemsInRow = 2,
+                        Items = new List<IAnswerItem>
+                        {
+                            new AnswerItem
+                            {
+                                Name = "Легкий",
+                                Value = "0"
+                            },
+                            new AnswerItem
+                            {
+                                Name = "Средний",
+                                Value = "1"
+                            },
+                            new AnswerItem
+                            {
+                                Name = "Сложный",
+                                Value = "2"
+                            }
+                        }
+                    };
+
+                    await SendMessageAsync(chatId, "Выбери уровень", answers);
+                }
+                else if (_userStates.TryGetValue(botUserId, out state) && state == "/create_drill.ChooseLevel")
+                {
+                    var drillData = _userLesson[botUserId];
+                    drillData.levelId = int.Parse(message);
+                    _userLesson[botUserId] = drillData;
+
+                    _userStates[botUserId] = "/create_drill.EnterDate";
+
+                    await SendMessageAsync(chatId, "Укажи дату занятия в формате dd.mm.yyyy");
+                }
+                else if (_userStates.TryGetValue(botUserId, out state) && state == "/create_drill.EnterDate")
+                {
+                    var date = message.Trim().Split('.');
+
+                    var drillData = _userLesson[botUserId];
+                    drillData.date = new DateOnly(int.Parse(date[2]), int.Parse(date[1]), int.Parse(date[0]));
+                    _userLesson[botUserId] = drillData;
+
+                    _userStates[botUserId] = "/create_drill.ChooseTime";
+
+                    var answers = new AllowedAnswers
+                    {
+                        ItemsInRow = 3,
+                        Items = new List<IAnswerItem>()
+                    };
+
+                    for (int i = 6; i <= 20; i++)
+                    {
+                        answers.Items.Add(new AnswerItem
+                        {
+                            Name = $"{i}:00",
+                            Value = $"{i}:00"
+                        });
+                    }
+
+                    await SendMessageAsync(chatId, $"Выбери время", answers);
+                }
+                else if (_userStates.TryGetValue(botUserId, out state) && state == "/create_drill.ChooseTime")
+                {
+                    var time = message.Trim().Split(':');
+
+                    var lessonData = _userLesson[botUserId];
+                    lessonData.time = new TimeOnly(int.Parse(time[0]), int.Parse(time[1]));
+                    _userLesson[botUserId] = lessonData;
+
+                    var users = await _apiClient.GetUsersAsync(botUserId);
+
+                    var usersCount = users.Count;
+
+                    if (usersCount > 1)
+                    {
+                        throw new Exception($"Найдено несколько пользователей с id {botUserId}. Обратитесь к администратору приложения.");
+                    }
+
+                    if (usersCount == 0)
+                    {
+                        throw new Exception($"Пользователь с id {botUserId} не найден. Попробуйте зарегистрироваться, введя команду /start.");
+                    }
+
+                    var userLessonData = _userLesson[botUserId];
+
+                    var newLesson = new LessonForCreationDto
+                    {
+                        DisciplineId = userLessonData.disciplineId,
+                        Difficulty = userLessonData.levelId,
+                        Date = new DateTime(userLessonData.date.Year, userLessonData.date.Month, userLessonData.date.Day, userLessonData.time.Hour, userLessonData.time.Minute, 0),
+                        TrainerId = users.First().Id
+                    };
+
+                    await _apiClient.CreateLessonAsync(newLesson);
+                    await SendMessageAsync(chatId, $"Занятие создано {_userLesson[botUserId]}. Что будем делать дальше?");
+
+                    _userStates.Remove(botUserId);
+                    _userLesson.Remove(botUserId);
                 }
             }
         }

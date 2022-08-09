@@ -7,9 +7,11 @@ namespace TrainingSchedule.Domain
     {
         Task<ICollection<Discipline>> GetDisciplinesAsync();
 
-        Task<ICollection<User>> GetUsersAsync(long? botUserId);
-
         Task<ICollection<Role>> GetRolesAsync();
+
+        Task<Lesson> CreateLessonAsync(LessonForCreationDto lessonForCreationDto);
+
+        Task<ICollection<User>> GetUsersAsync(long? botUserId);
 
         Task<User> CreateUserAsync(UserForCreationDto userForCreationDto);
     }

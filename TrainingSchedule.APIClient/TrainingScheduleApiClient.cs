@@ -51,5 +51,14 @@ namespace TrainingSchedule.ApiClient
 
             return response;
         }
+
+        public async Task<Lesson> CreateLessonAsync(LessonForCreationDto lessonForCreationDto)
+        {
+            var request = new RestRequest("lessons").AddJsonBody(lessonForCreationDto);
+
+            var response = await _client.PostAsync<Lesson>(request);
+
+            return response;
+        }
     }
 }
