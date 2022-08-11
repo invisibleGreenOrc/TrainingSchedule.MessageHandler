@@ -1,4 +1,6 @@
 ﻿using System.Data;
+using System.Text;
+using System.Xml.Linq;
 using TrainingSchedule.Contracts;
 using TrainingSchedule.Domain;
 using TrainingSchedule.Domain.Entities;
@@ -26,6 +28,7 @@ namespace TrainingSchedule.Services.MessageService
             if (message == "/start")
             {
                 var users = await _apiClient.GetUsersAsync(botUserId);
+
                 var usersCount = users.Count;
 
                 if (usersCount > 1)
@@ -69,6 +72,78 @@ namespace TrainingSchedule.Services.MessageService
                 }
 
                 await SendMessageAsync(chatId, "Выбери дисциплину", answers);
+            }
+            //else if (message == "/enroll_to_drill")
+            //{
+            //    var drills = _lessonsController.GetFutureLessons();
+            //    var buttons = drills.OrderBy(drill => drill.Date).Select((drill, index) => new[]
+            //    {
+            //            InlineKeyboardButton.WithCallbackData($"{index + 1}. {drill.Date} {drill.DisciplineName}, сложность - {drill.Difficulty}," +
+            //                                                    $"тренер - {drill.TrainerDesc}", drill.Id.ToString())
+            //        });
+
+            //    var inlineKeyboard = new InlineKeyboardMarkup(buttons);
+            //    await SendMessageAsync(chatId, $"Выбери тренировку", inlineKeyboard);
+
+            //    _userStates[userId] = "/enroll_to_drill";
+            //}
+            else if (message == "/my_drills")
+            {
+                 var users = await _apiClient.GetUsersAsync(botUserId);
+                var usersCount = users.Count;
+
+                if (usersCount > 1)
+                {
+                    throw new Exception($"Найдено несколько пользователей с id {botUserId}. Обратитесь к администратору приложения.");
+                }
+
+                if (usersCount == 0)
+                {
+                    throw new Exception($"Пользователь с id {botUserId} не найден. Попробуйте зарегистрироваться, введя команду /start.");
+                }
+
+                var userRoleId = users.First().RoleId;
+                var userId = users.First().Id;
+
+                ICollection <Lesson> lessons;
+
+                if (userRoleId == 1)
+                {
+                    lessons = await _apiClient.GetFutureLessonsAsync(trainerId: userId);
+                }
+                else if (userRoleId == 2)
+                {
+                    lessons = await _apiClient.GetFutureLessonsAsync(traineeId: userId);
+                }
+                else
+                {
+                    throw new Exception($"У пользователя с botUserId {botUserId} задана недопустимая роль {userRoleId}.");
+                }
+
+
+                if (lessons == null || !lessons.Any())
+                {
+                    await SendMessageAsync(chatId, "Нет тренировок");
+                }
+                else
+                {
+                    var sb = new StringBuilder();
+
+                    sb.AppendLine("Твои тренировки:");
+
+                    Discipline discipline;
+                    User trainer;
+
+                    foreach (var lesson in lessons.OrderBy(x => x.Date))
+                    {
+                        discipline = await _apiClient.GetDisciplineByIdAsync(lesson.Id);
+                        trainer = await _apiClient.GetUserByIdAsync(userId);
+
+                        sb.AppendLine($"{lesson.Date.ToString("dd.MM.yyyy HH:mm")} {discipline.Name}, сложность - {lesson.Difficulty}, тренер - {trainer.Name}");
+                    }
+
+                    await SendMessageAsync(chatId, sb.ToString());
+                }
             }
             else
             {

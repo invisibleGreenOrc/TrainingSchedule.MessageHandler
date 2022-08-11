@@ -60,5 +60,46 @@ namespace TrainingSchedule.ApiClient
 
             return response;
         }
+
+        public async Task<Discipline> GetDisciplineByIdAsync(int disciplineId)
+        {
+            var request = new RestRequest("disciplines/{disciplineId}")
+                .AddUrlSegment("disciplineId", disciplineId);
+
+            var response = await _client.GetAsync<Discipline>(request, default);
+
+            return response;
+        }
+
+        public async Task<ICollection<Lesson>> GetFutureLessonsAsync(int? trainerId = null, int? traineeId = null)
+        {
+            var request = new RestRequest("lessons");
+
+            request.AddQueryParameter("dateFrom", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+
+            if (trainerId.HasValue)
+            {
+                request.AddQueryParameter("trainerId", trainerId.Value);
+            }
+
+            if (traineeId.HasValue)
+            {
+                request.AddQueryParameter("traineeId", traineeId.Value);
+            }
+
+            var response = await _client.GetAsync<ICollection<Lesson>>(request, default);
+
+            return response;
+        }
+
+        public async Task<User> GetUserByIdAsync(int userId)
+        {
+            var request = new RestRequest("users/{userId}")
+                .AddUrlSegment("userId", userId);
+
+            var response = await _client.GetAsync<User>(request, default);
+
+            return response;
+        }
     }
 }
