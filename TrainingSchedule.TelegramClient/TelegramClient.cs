@@ -112,7 +112,14 @@ namespace TrainingSchedule.Telegram
         {
             var buttons = allowedAnswers.Items.Select((item, index) => InlineKeyboardButton.WithCallbackData($"{index + 1}. {item.Name}", item.Value));
 
-            var inlineKeyboard = new InlineKeyboardMarkup(buttons);
+            var buttonsList = new List<List<InlineKeyboardButton>>();
+
+            foreach (var button in buttons)
+            {
+                buttonsList.Add(new List<InlineKeyboardButton> { button });
+            }
+
+            var inlineKeyboard = new InlineKeyboardMarkup(buttonsList);
 
             Message sentMessage = await _botClient.SendTextMessageAsync(
                 chatId: chatId,

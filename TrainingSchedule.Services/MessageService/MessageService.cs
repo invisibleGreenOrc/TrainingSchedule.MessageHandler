@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using System.Text;
-using System.Xml.Linq;
 using TrainingSchedule.Contracts;
 using TrainingSchedule.Domain;
 using TrainingSchedule.Domain.Entities;
@@ -73,20 +72,37 @@ namespace TrainingSchedule.Services.MessageService
 
                 await SendMessageAsync(chatId, "Выбери дисциплину", answers);
             }
-            //else if (message == "/enroll_to_drill")
-            //{
-            //    var drills = _lessonsController.GetFutureLessons();
-            //    var buttons = drills.OrderBy(drill => drill.Date).Select((drill, index) => new[]
-            //    {
-            //            InlineKeyboardButton.WithCallbackData($"{index + 1}. {drill.Date} {drill.DisciplineName}, сложность - {drill.Difficulty}," +
-            //                                                    $"тренер - {drill.TrainerDesc}", drill.Id.ToString())
-            //        });
+            else if (message == "/enroll_to_drill")
+            {
+                var lessons = await _apiClient.GetFutureLessonsAsync();
 
-            //    var inlineKeyboard = new InlineKeyboardMarkup(buttons);
-            //    await SendMessageAsync(chatId, $"Выбери тренировку", inlineKeyboard);
+                var answers = new AllowedAnswers
+                {
+                    ItemsInRow = 1,
+                    Items = new List<IAnswerItem>()
+                };
 
-            //    _userStates[userId] = "/enroll_to_drill";
-            //}
+                Discipline discipline;
+                User trainer;
+
+                foreach (var lesson in lessons.OrderBy(x => x.Date))
+                {
+                    discipline = await _apiClient.GetDisciplineByIdAsync(lesson.DisciplineId);
+                    trainer = await _apiClient.GetUserByIdAsync(lesson.TrainerId);
+
+                    var answerItem = new AnswerItem
+                    {
+                        Name = $"{lesson.Date:dd.MM.yyyy HH:mm} {discipline.Name}, сложность - {lesson.Difficulty}, тренер - {trainer.Name}",
+                        Value = lesson.Id.ToString()
+                    };
+
+                    answers.Items.Add(answerItem);
+                }
+
+                await SendMessageAsync(chatId, $"Выбери тренировку", answers);
+
+                _userStates[botUserId] = "/enroll_to_drill";
+            }
             else if (message == "/my_drills")
             {
                  var users = await _apiClient.GetUsersAsync(botUserId);
@@ -139,7 +155,7 @@ namespace TrainingSchedule.Services.MessageService
                         discipline = await _apiClient.GetDisciplineByIdAsync(lesson.Id);
                         trainer = await _apiClient.GetUserByIdAsync(userId);
 
-                        sb.AppendLine($"{lesson.Date.ToString("dd.MM.yyyy HH:mm")} {discipline.Name}, сложность - {lesson.Difficulty}, тренер - {trainer.Name}");
+                        sb.AppendLine($"{lesson.Date:dd.MM.yyyy HH:mm} {discipline.Name}, сложность - {lesson.Difficulty}, тренер - {trainer.Name}");
                     }
 
                     await SendMessageAsync(chatId, sb.ToString());
