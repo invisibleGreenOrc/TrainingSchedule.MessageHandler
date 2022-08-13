@@ -110,7 +110,7 @@ namespace TrainingSchedule.Telegram
 
         public async Task SendMessageAsync(long chatId, string message, IAllowedAnswers allowedAnswers)
         {
-            var buttons = allowedAnswers.Items.Select((item, index) => InlineKeyboardButton.WithCallbackData($"{index + 1}. {item.Name}", item.Value));
+            var buttons = allowedAnswers.Items.Select((item) => InlineKeyboardButton.WithCallbackData($"{item.Name}", item.Value));
 
             var buttonsList = new List<List<InlineKeyboardButton>>();
 
