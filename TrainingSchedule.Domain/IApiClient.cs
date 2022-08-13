@@ -20,5 +20,7 @@ namespace TrainingSchedule.Domain
         Task<User> GetUserByIdAsync(int userId);
 
         Task<User> CreateUserAsync(UserForCreationDto userForCreationDto);
+
+        Task AddLessonParticipant(int lessonId, int traineeId);
     }
 }

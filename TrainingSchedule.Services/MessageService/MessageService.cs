@@ -76,36 +76,43 @@ namespace TrainingSchedule.Services.MessageService
             {
                 var lessons = await _apiClient.GetFutureLessonsAsync();
 
-                var answers = new AllowedAnswers
+                if (lessons == null || !lessons.Any())
                 {
-                    ItemsInRow = 1,
-                    Items = new List<IAnswerItem>()
-                };
-
-                Discipline discipline;
-                User trainer;
-
-                foreach (var lesson in lessons.OrderBy(x => x.Date))
+                    await SendMessageAsync(chatId, "Нет доступных для записи тренировок");
+                }
+                else
                 {
-                    discipline = await _apiClient.GetDisciplineByIdAsync(lesson.DisciplineId);
-                    trainer = await _apiClient.GetUserByIdAsync(lesson.TrainerId);
-
-                    var answerItem = new AnswerItem
+                    var answers = new AllowedAnswers
                     {
-                        Name = $"{lesson.Date:dd.MM.yyyy HH:mm} {discipline.Name}, сложность - {lesson.Difficulty}, тренер - {trainer.Name}",
-                        Value = lesson.Id.ToString()
+                        ItemsInRow = 1,
+                        Items = new List<IAnswerItem>()
                     };
 
-                    answers.Items.Add(answerItem);
-                }
+                    Discipline discipline;
+                    User trainer;
 
-                await SendMessageAsync(chatId, $"Выбери тренировку", answers);
+                    foreach (var lesson in lessons.OrderBy(x => x.Date))
+                    {
+                        discipline = await _apiClient.GetDisciplineByIdAsync(lesson.DisciplineId);
+                        trainer = await _apiClient.GetUserByIdAsync(lesson.TrainerId);
+
+                        var answerItem = new AnswerItem
+                        {
+                            Name = $"{lesson.Date:dd.MM.yyyy HH:mm} {discipline.Name}, сложность - {lesson.Difficulty}, тренер - {trainer.Name}",
+                            Value = lesson.Id.ToString()
+                        };
+
+                        answers.Items.Add(answerItem);
+                    }
+
+                    await SendMessageAsync(chatId, $"Выбери тренировку", answers);
+                }
 
                 _userStates[botUserId] = "/enroll_to_drill";
             }
             else if (message == "/my_drills")
             {
-                 var users = await _apiClient.GetUsersAsync(botUserId);
+                var users = await _apiClient.GetUsersAsync(botUserId);
                 var usersCount = users.Count;
 
                 if (usersCount > 1)
@@ -139,7 +146,7 @@ namespace TrainingSchedule.Services.MessageService
 
                 if (lessons == null || !lessons.Any())
                 {
-                    await SendMessageAsync(chatId, "Нет тренировок");
+                    await SendMessageAsync(chatId, "Нет запланированных тренировок");
                 }
                 else
                 {
@@ -152,8 +159,8 @@ namespace TrainingSchedule.Services.MessageService
 
                     foreach (var lesson in lessons.OrderBy(x => x.Date))
                     {
-                        discipline = await _apiClient.GetDisciplineByIdAsync(lesson.Id);
-                        trainer = await _apiClient.GetUserByIdAsync(userId);
+                        discipline = await _apiClient.GetDisciplineByIdAsync(lesson.DisciplineId);
+                        trainer = await _apiClient.GetUserByIdAsync(lesson.TrainerId);
 
                         sb.AppendLine($"{lesson.Date:dd.MM.yyyy HH:mm} {discipline.Name}, сложность - {lesson.Difficulty}, тренер - {trainer.Name}");
                     }
@@ -314,6 +321,27 @@ namespace TrainingSchedule.Services.MessageService
 
                     _userStates.Remove(botUserId);
                     _userLesson.Remove(botUserId);
+                }
+                else if (_userStates.TryGetValue(botUserId, out state) && state == "/enroll_to_drill")
+                {
+                    var users = await _apiClient.GetUsersAsync(botUserId);
+
+                    var usersCount = users.Count;
+
+                    if (usersCount > 1)
+                    {
+                        throw new Exception($"Найдено несколько пользователей с id {botUserId}. Обратитесь к администратору приложения.");
+                    }
+
+                    if (usersCount == 0)
+                    {
+                        throw new Exception($"Пользователь с id {botUserId} не найден. Попробуйте зарегистрироваться, введя команду /start.");
+                    }
+
+                    await _apiClient.AddLessonParticipant(int.Parse(message), users.First().Id);
+
+                    await SendMessageAsync(chatId, $"Вы записаны.");
+                    _userStates.Remove(botUserId);
                 }
             }
         }

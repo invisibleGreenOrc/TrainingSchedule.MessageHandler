@@ -1,4 +1,5 @@
 ﻿using RestSharp;
+using RestSharp.Serializers;
 using TrainingSchedule.Contracts;
 using TrainingSchedule.Domain;
 using TrainingSchedule.Domain.Entities;
@@ -26,9 +27,9 @@ namespace TrainingSchedule.ApiClient
         public async Task<ICollection<Discipline>> GetDisciplinesAsync()
         {
             var request = new RestRequest("disciplines");
-            
+
             var response = await _client.GetAsync<ICollection<Discipline>>(request, default);
-            
+
             return response;
         }
 
@@ -100,6 +101,15 @@ namespace TrainingSchedule.ApiClient
             var response = await _client.GetAsync<User>(request, default);
 
             return response;
+        }
+
+        public async Task AddLessonParticipant(int lessonId, int traineeId)
+        {
+            var request = new RestRequest("lessons/{lessonId}/trainees")
+                .AddUrlSegment("lessonId", lessonId)
+                .AddJsonBody(new { traineeId = traineeId });
+
+            await _client.PostAsync(request);
         }
     }
 }
