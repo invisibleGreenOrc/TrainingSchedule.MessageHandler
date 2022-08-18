@@ -14,7 +14,7 @@ namespace TrainingSchedule.Telegram
     {
         private readonly TelegramBotClient _botClient;
 
-        public event Func<long, long, string, Task> MessageReceived;
+        public event Func<long, long, string, Task>? MessageReceived;
 
         public TelegramClient(string telegramToken)
         {
