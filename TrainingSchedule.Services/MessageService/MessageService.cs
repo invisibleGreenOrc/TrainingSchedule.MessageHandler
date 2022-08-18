@@ -54,7 +54,7 @@ namespace TrainingSchedule.Services.MessageService
 
             if (usersCount == 1)
             {
-                await SendMessageAsync(chatId, $"Привет, {users.First().Name}, что будем делать?");
+                await SendMessageAsync(chatId, $"Привет, {users.First().Name}, выбери команду из меню.");
             }
             else
             {
