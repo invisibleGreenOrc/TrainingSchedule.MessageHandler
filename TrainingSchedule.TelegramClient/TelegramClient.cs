@@ -12,9 +12,9 @@ namespace TrainingSchedule.Telegram
 {
     public class TelegramClient : IBotClient
     {
-        private readonly TelegramBotClient _botClient;
-
         public event Func<long, long, string, Task>? MessageReceived;
+
+        private readonly TelegramBotClient _botClient;
 
         public TelegramClient(string telegramToken)
         {
@@ -49,6 +49,34 @@ namespace TrainingSchedule.Telegram
             Console.ReadLine();
 
             cts.Cancel();
+        }
+
+        public async Task SendMessageAsync(long chatId, string message)
+        {
+            Message sentMessage = await _botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: message,
+                cancellationToken: default);
+        }
+
+        public async Task SendMessageAsync(long chatId, string message, IAllowedAnswers allowedAnswers)
+        {
+            var buttons = allowedAnswers.Items.Select((item) => InlineKeyboardButton.WithCallbackData($"{item.Name}", item.Value));
+
+            var buttonsList = new List<List<InlineKeyboardButton>>();
+
+            foreach (var button in buttons)
+            {
+                buttonsList.Add(new List<InlineKeyboardButton> { button });
+            }
+
+            var inlineKeyboard = new InlineKeyboardMarkup(buttonsList);
+
+            Message sentMessage = await _botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: message,
+                replyMarkup: inlineKeyboard,
+                cancellationToken: default);
         }
 
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
@@ -98,34 +126,6 @@ namespace TrainingSchedule.Telegram
             Console.WriteLine(ErrorMessage);
 
             return Task.CompletedTask;
-        }
-
-        public async Task SendMessageAsync(long chatId, string message)
-        {
-            Message sentMessage = await _botClient.SendTextMessageAsync(
-                chatId: chatId,
-                text: message,
-                cancellationToken: default);
-        }
-
-        public async Task SendMessageAsync(long chatId, string message, IAllowedAnswers allowedAnswers)
-        {
-            var buttons = allowedAnswers.Items.Select((item) => InlineKeyboardButton.WithCallbackData($"{item.Name}", item.Value));
-
-            var buttonsList = new List<List<InlineKeyboardButton>>();
-
-            foreach (var button in buttons)
-            {
-                buttonsList.Add(new List<InlineKeyboardButton> { button });
-            }
-
-            var inlineKeyboard = new InlineKeyboardMarkup(buttonsList);
-
-            Message sentMessage = await _botClient.SendTextMessageAsync(
-                chatId: chatId,
-                text: message,
-                replyMarkup: inlineKeyboard,
-                cancellationToken: default);
         }
     }
 }

@@ -4,8 +4,8 @@ namespace TrainingSchedule.Services.MessageService
 {
     public interface IMessageHandlingResult
     {
-        public string MessageText { get; set; }
+        string MessageText { get; set; }
 
-        public IAllowedAnswers? AllowedAnswer { get; set; }
+        IAllowedAnswers? AllowedAnswer { get; set; }
     }
 }
