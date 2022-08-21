@@ -1,16 +1,18 @@
 ﻿namespace TrainingSchedule.Services.FSM
 {
-    internal class State
+    public class State
     {
         public int Id { get; init; }
 
         public string Name { get; init; }
 
-        public State? NextState { get; private set;}
+        public State? NextState { get; private set; }
 
-        public event Func<long, long, string, Task>? Entered;
+        public event Func<FiniteStateMachine, long, long, string, Task>? Entered;
 
-        public State(int id, string name)
+        private FiniteStateMachine _stateMachine;
+
+        public State(int id, string name, FiniteStateMachine stateMachine)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -19,6 +21,7 @@
 
             Id = id;
             Name = name;
+            _stateMachine = stateMachine;
         }
 
         public void SetNextState(State nextState)
@@ -30,7 +33,7 @@
         {
             if (Entered is not null)
             {
-                await Entered(botUserId, chatId, message);
+                await Entered(_stateMachine, botUserId, chatId, message);
             }
         }
     }

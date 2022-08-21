@@ -1,20 +1,14 @@
 ﻿namespace TrainingSchedule.Services.FSM
 {
-    public class FiniteStateMachine
+    public class FiniteStateMachine : IStateMachine
     {
-        private List<State> _states;
+        private List<State> _states = new();
 
         private State? _initialState;
 
         private State? _currentState;
 
-        private Dictionary<string, State> _commandsToSetState;
-
-        public FiniteStateMachine()
-        {
-            _states = new List<State>();
-            _commandsToSetState = new Dictionary<string, State>();
-        }
+        private Dictionary<string, State> _commandsToSetState = new();
 
         public void AddState(string stateName)
         {
@@ -34,7 +28,7 @@
                 id = 0;
             }
 
-            _states.Add(new State(id, stateName));
+            _states.Add(new State(id, stateName, this));
         }
 
         public void SetInitialState(string stateName)
@@ -61,7 +55,7 @@
             _commandsToSetState.Add(command, state);
         }
 
-        public void SubscribeToStateEntryEvent(string stateName, Func<long, long, string, Task> action)
+        public void SubscribeToStateEntryEvent(string stateName, Func<FiniteStateMachine, long, long, string, Task> action)
         {
             GetStateByName(stateName).Entered += action;
         }

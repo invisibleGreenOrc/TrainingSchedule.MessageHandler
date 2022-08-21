@@ -1,4 +1,6 @@
 ﻿using TrainingSchedule.ApiClient;
+using TrainingSchedule.Services;
+using TrainingSchedule.Services.CommandHandlers;
 using TrainingSchedule.Services.MessageService;
 using TrainingSchedule.Telegram;
 
@@ -13,7 +15,19 @@ namespace TrainingSchedule.ConsoleApp
             var telegramClient = new TelegramClient(tgToken);
             var apiClient = new TrainingScheduleApiClient();
 
-            var messageService = new MessageService(telegramClient, apiClient);
+            var userDataService = new UsersDataService();
+
+            var startCommandHandler = new StartCommandHandler(apiClient, telegramClient, userDataService);
+            var createLessonCommandHandler = new CreateLessonCommandHandler(apiClient, telegramClient, userDataService);
+            var showLessonsCommandHandler = new ShowLessonsCommandHandler(apiClient, telegramClient);
+            var lessonEnrollCommandHandler = new LessonEnrollCommandHandler(apiClient, telegramClient);
+
+            var messageService = new MessageService(telegramClient, new List<ICommandHandler> {
+                    startCommandHandler,
+                    createLessonCommandHandler,
+                    showLessonsCommandHandler,
+                    lessonEnrollCommandHandler
+                });
 
             await telegramClient.Run();
         }
