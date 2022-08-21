@@ -33,11 +33,14 @@ namespace TrainingSchedule.ApiClient
             return response;
         }
 
-        public async Task<ICollection<User>> GetUsersAsync(long? botUserId)
+        public async Task<ICollection<User>> GetUsersAsync(long? botUserId = null)
         {
             var request = new RestRequest("users");
 
-            request.AddQueryParameter("botUserId", botUserId.Value);
+            if (botUserId.HasValue)
+            {
+                request.AddQueryParameter("botUserId", botUserId.Value);
+            }
 
             var response = await _client.GetAsync<ICollection<User>>(request, default);
 

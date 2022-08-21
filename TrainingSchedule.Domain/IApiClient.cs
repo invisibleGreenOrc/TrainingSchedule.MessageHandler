@@ -15,7 +15,7 @@ namespace TrainingSchedule.Domain
         
         Task<Lesson> CreateLessonAsync(LessonForCreationDto lessonForCreationDto);
 
-        Task<ICollection<User>> GetUsersAsync(long? botUserId);
+        Task<ICollection<User>> GetUsersAsync(long? botUserId = null);
 
         Task<User> GetUserByIdAsync(int userId);
 

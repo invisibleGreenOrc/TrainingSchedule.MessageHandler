@@ -16,14 +16,16 @@ namespace TrainingSchedule.Telegram
 
         private readonly TelegramBotClient _botClient;
 
-        public TelegramClient(string telegramToken)
+        public TelegramClient()
         {
-            if (telegramToken is null)
+            var tgToken = Environment.GetEnvironmentVariable("tgToken", EnvironmentVariableTarget.User) ?? throw new ArgumentNullException("Не удалось получить токен.");
+
+            if (tgToken is null)
             {
                 throw new ArgumentNullException("Не задан токен.");
             }
 
-            _botClient = new TelegramBotClient(telegramToken);
+            _botClient = new TelegramBotClient(tgToken);
         }
 
         public async Task Run()

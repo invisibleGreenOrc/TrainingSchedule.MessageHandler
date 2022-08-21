@@ -1,7 +1,11 @@
-﻿using TrainingSchedule.ApiClient;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using TrainingSchedule.ApiClient;
 using TrainingSchedule.Services;
 using TrainingSchedule.Services.CommandHandlers;
+using TrainingSchedule.Services.BackgroundServices;
 using TrainingSchedule.Telegram;
+using TrainingSchedule.Domain;
 
 namespace TrainingSchedule.ConsoleApp
 {
@@ -9,10 +13,17 @@ namespace TrainingSchedule.ConsoleApp
     {
         public static async Task Main()
         {
-            var tgToken = Environment.GetEnvironmentVariable("tgToken", EnvironmentVariableTarget.User) ?? throw new ArgumentNullException("Не удалось получить токен.");
+            var host = Host.CreateDefaultBuilder()
+                .ConfigureServices((context, services) =>
+                {
+                    services.AddHostedService<NotificationService>();
+                    services.AddSingleton<IApiClient, TrainingScheduleApiClient>();
+                    services.AddSingleton<IBotClient, TelegramClient>();
+                })
+                .Build();
 
-            var telegramClient = new TelegramClient(tgToken);
-            var apiClient = new TrainingScheduleApiClient();
+            var telegramClient = ActivatorUtilities.CreateInstance<TelegramClient>(host.Services);
+            var apiClient = ActivatorUtilities.CreateInstance<TrainingScheduleApiClient>(host.Services);
 
             var userDataService = new UsersDataService();
 
@@ -27,6 +38,9 @@ namespace TrainingSchedule.ConsoleApp
                     showLessonsCommandHandler,
                     lessonEnrollCommandHandler
                 });
+            
+            // Синхронно Асинхронно??
+            host.Start();
 
             await telegramClient.Run();
         }
