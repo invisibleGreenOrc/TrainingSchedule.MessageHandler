@@ -1,7 +1,6 @@
 ﻿using TrainingSchedule.ApiClient;
 using TrainingSchedule.Services;
 using TrainingSchedule.Services.CommandHandlers;
-using TrainingSchedule.Services.MessageService;
 using TrainingSchedule.Telegram;
 
 namespace TrainingSchedule.ConsoleApp

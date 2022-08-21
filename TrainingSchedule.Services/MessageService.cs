@@ -2,7 +2,7 @@
 using TrainingSchedule.Services.CommandHandlers;
 using TrainingSchedule.Services.FSM;
 
-namespace TrainingSchedule.Services.MessageService
+namespace TrainingSchedule.Services
 {
     public class MessageService
     {
@@ -20,14 +20,14 @@ namespace TrainingSchedule.Services.MessageService
             _stateMachineBuilder = new FiniteStateMachineBuilder(commandHandlers);
         }
 
-        public async Task HandleMessageAsync(long botUserId, long chatId, string message)
+        private async Task HandleMessageAsync(long botUserId, long chatId, string message)
         {
             await GetStateMachineForUser(botUserId).ProcessMessage(botUserId, chatId, message);
         }
 
         private FiniteStateMachine GetStateMachineForUser(long botUserId)
         {
-            if (_usersStateMachines.TryGetValue(botUserId, out FiniteStateMachine? fsm) && (fsm is not null))
+            if (_usersStateMachines.TryGetValue(botUserId, out FiniteStateMachine? fsm) && fsm is not null)
             {
                 return fsm;
             }
