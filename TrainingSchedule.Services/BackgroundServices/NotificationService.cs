@@ -19,7 +19,7 @@ namespace TrainingSchedule.Services.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+             while (!stoppingToken.IsCancellationRequested)
             {
                 var users = await _apiClient.GetUsersAsync();
 

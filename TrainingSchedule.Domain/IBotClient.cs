@@ -4,6 +4,8 @@ namespace TrainingSchedule.Domain
 {
     public interface IBotClient
     {
+        Task StartAsync();
+        
         Task SendMessageAsync(long chatId, string message);
 
         Task SendMessageAsync(long chatId, string message, IAllowedAnswers allowedAnswers);

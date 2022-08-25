@@ -1,10 +1,11 @@
-﻿using TrainingSchedule.Domain;
+﻿using Microsoft.Extensions.Hosting;
+using TrainingSchedule.Domain;
 using TrainingSchedule.Services.CommandHandlers;
 using TrainingSchedule.Services.FSM;
 
 namespace TrainingSchedule.Services
 {
-    public class MessageService
+    public class MessageProcessingService : IHostedService
     {
         private readonly IBotClient _botClient;
 
@@ -12,7 +13,7 @@ namespace TrainingSchedule.Services
 
         private Dictionary<long, FiniteStateMachine> _usersStateMachines = new();
 
-        public MessageService(IBotClient botClient, IEnumerable<ICommandHandler> commandHandlers)
+        public MessageProcessingService(IBotClient botClient, IEnumerable<ICommandHandler> commandHandlers)
         {
             _botClient = botClient;
             _botClient.MessageReceived += HandleMessageAsync;
@@ -36,6 +37,16 @@ namespace TrainingSchedule.Services
             _usersStateMachines[botUserId] = fsm;
 
             return fsm;
+        }
+
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {
+            await _botClient.StartAsync();
+        }
+
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            //throw new NotImplementedException();
         }
     }
 }

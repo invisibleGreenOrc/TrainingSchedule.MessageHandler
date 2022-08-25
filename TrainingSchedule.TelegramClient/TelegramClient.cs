@@ -28,7 +28,7 @@ namespace TrainingSchedule.Telegram
             _botClient = new TelegramBotClient(tgToken);
         }
 
-        public async Task Run()
+        public async Task StartAsync()
         {
             using var cts = new CancellationTokenSource();
 
@@ -48,9 +48,8 @@ namespace TrainingSchedule.Telegram
             var me = await _botClient.GetMeAsync();
 
             Console.WriteLine($"Start listening for @{me.Username}");
-            Console.ReadLine();
 
-            cts.Cancel();
+            //cts.Cancel();
         }
 
         public async Task SendMessageAsync(long chatId, string message)
@@ -109,10 +108,6 @@ namespace TrainingSchedule.Telegram
                 MessageReceived?.Invoke(userId, chatId, messageText);
 
                 await botClient.AnswerCallbackQueryAsync(update.CallbackQuery.Id);
-            }
-            else
-            {
-                return;
             }
         }
 

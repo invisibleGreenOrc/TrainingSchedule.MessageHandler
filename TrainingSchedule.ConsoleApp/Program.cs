@@ -11,38 +11,26 @@ namespace TrainingSchedule.ConsoleApp
 {
     internal class Program
     {
-        public static async Task Main()
+        public static void Main()
         {
             var host = Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) =>
                 {
+                    services.AddHostedService<MessageProcessingService>();
                     services.AddHostedService<NotificationService>();
                     services.AddSingleton<IApiClient, TrainingScheduleApiClient>();
                     services.AddSingleton<IBotClient, TelegramClient>();
+                    services.AddSingleton<ICommandHandler, StartCommandHandler>();
+                    services.AddSingleton<ICommandHandler, CreateLessonCommandHandler>();
+                    services.AddSingleton<ICommandHandler, ShowLessonsCommandHandler>();
+                    services.AddSingleton<ICommandHandler, LessonEnrollCommandHandler>();
+                    services.AddSingleton<IUsersDataService, UsersDataService>();
                 })
                 .Build();
 
-            var telegramClient = ActivatorUtilities.CreateInstance<TelegramClient>(host.Services);
-            var apiClient = ActivatorUtilities.CreateInstance<TrainingScheduleApiClient>(host.Services);
-
-            var userDataService = new UsersDataService();
-
-            var startCommandHandler = new StartCommandHandler(apiClient, telegramClient, userDataService);
-            var createLessonCommandHandler = new CreateLessonCommandHandler(apiClient, telegramClient, userDataService);
-            var showLessonsCommandHandler = new ShowLessonsCommandHandler(apiClient, telegramClient);
-            var lessonEnrollCommandHandler = new LessonEnrollCommandHandler(apiClient, telegramClient);
-
-            var messageService = new MessageService(telegramClient, new List<ICommandHandler> {
-                    startCommandHandler,
-                    createLessonCommandHandler,
-                    showLessonsCommandHandler,
-                    lessonEnrollCommandHandler
-                });
-            
-            // Синхронно Асинхронно??
             host.Start();
 
-            await telegramClient.Run();
+            Console.ReadKey();
         }
     }
 }
