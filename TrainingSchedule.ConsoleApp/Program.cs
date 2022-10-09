@@ -4,7 +4,6 @@ using TrainingSchedule.ApiClient;
 using TrainingSchedule.Domain;
 using TrainingSchedule.Rabbit;
 using TrainingSchedule.Services;
-using TrainingSchedule.Services.BackgroundServices;
 using TrainingSchedule.Services.CommandHandlers;
 
 namespace TrainingSchedule.ConsoleApp
@@ -17,7 +16,6 @@ namespace TrainingSchedule.ConsoleApp
                 .ConfigureServices((context, services) =>
                 {
                     services.AddHostedService<MessageProcessingService>();
-                    //services.AddHostedService<NotificationService>();
                     services.AddSingleton<IApiClient, TrainingScheduleApiClient>();
                     services.AddSingleton<IMessageSender, MessageProducer>();
                     services.AddSingleton<IMessageReceiver, MessageConsumer>();
