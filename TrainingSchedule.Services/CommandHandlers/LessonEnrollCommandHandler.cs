@@ -1,4 +1,5 @@
-﻿using TrainingSchedule.Domain;
+﻿using TrainingSchedule.Contracts;
+using TrainingSchedule.Domain;
 using TrainingSchedule.Domain.Entities;
 using TrainingSchedule.Services.FSM;
 
@@ -16,9 +17,9 @@ namespace TrainingSchedule.Services.CommandHandlers
 
         private IApiClient _apiClient;
 
-        private IBotClient _botClient;
+        private IMessageSender _messageSender;
 
-        public LessonEnrollCommandHandler(IApiClient apiClient, IBotClient botClient)
+        public LessonEnrollCommandHandler(IApiClient apiClient, IMessageSender messageSender)
         {
             _commandToHandle = "/enroll_to_drill";
 
@@ -28,7 +29,7 @@ namespace TrainingSchedule.Services.CommandHandlers
             _initialState = "EnrollToLesson.ShowLessons";
 
             _apiClient = apiClient;
-            _botClient = botClient;
+            _messageSender = messageSender;
         }
 
         public (string command, string state) GetCommandAndLinkedState()
@@ -59,7 +60,7 @@ namespace TrainingSchedule.Services.CommandHandlers
 
             if (lessons == null || !lessons.Any())
             {
-                await _botClient.SendMessageAsync(chatId, "Нет доступных для записи тренировок");
+                await _messageSender.SendAsync(chatId, "Нет доступных для записи тренировок");
             }
             else
             {
@@ -86,7 +87,7 @@ namespace TrainingSchedule.Services.CommandHandlers
                     answers.Items.Add(answerItem);
                 }
 
-                await _botClient.SendMessageAsync(chatId, $"Выбери тренировку", answers);
+                await _messageSender.SendAsync(chatId, $"Выбери тренировку", answers);
             }
 
             stateMachine.MoveToNextState();
@@ -110,7 +111,7 @@ namespace TrainingSchedule.Services.CommandHandlers
 
             await _apiClient.AddLessonParticipant(int.Parse(message), users.First().Id);
 
-            await _botClient.SendMessageAsync(chatId, $"Вы записаны.");
+            await _messageSender.SendAsync(chatId, $"Вы записаны.");
 
             stateMachine.MoveToNextState();
         }

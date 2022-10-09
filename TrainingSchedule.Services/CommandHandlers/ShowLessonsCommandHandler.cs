@@ -17,9 +17,9 @@ namespace TrainingSchedule.Services.CommandHandlers
 
         private IApiClient _apiClient;
 
-        private IBotClient _botClient;
+        private IMessageSender _messageSender;
 
-        public ShowLessonsCommandHandler(IApiClient apiClient, IBotClient botClient)
+        public ShowLessonsCommandHandler(IApiClient apiClient, IMessageSender messageSender)
         {
             _commandToHandle = "/my_drills";
 
@@ -28,7 +28,7 @@ namespace TrainingSchedule.Services.CommandHandlers
             _initialState = "ShowLessons";
 
             _apiClient = apiClient;
-            _botClient = botClient;
+            _messageSender = messageSender;
         }
 
         public (string command, string state) GetCommandAndLinkedState()
@@ -80,7 +80,7 @@ namespace TrainingSchedule.Services.CommandHandlers
 
             if (lessons == null || !lessons.Any())
             {
-                await _botClient.SendMessageAsync(chatId, "Нет запланированных тренировок");
+                await _messageSender.SendAsync(chatId, "Нет запланированных тренировок");
             }
             else
             {
@@ -99,7 +99,7 @@ namespace TrainingSchedule.Services.CommandHandlers
                     sb.AppendLine($"{lesson.Date:dd.MM.yyyy HH:mm} {discipline.Name}, сложность - {lesson.Difficulty}, тренер - {trainer.Name}");
                 }
 
-                await _botClient.SendMessageAsync(chatId, sb.ToString());
+                await _messageSender.SendAsync(chatId, sb.ToString());
             }
 
             stateMachine.MoveToNextState();

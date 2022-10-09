@@ -1,4 +1,4 @@
-﻿namespace TrainingSchedule.Domain.Entities
+﻿namespace TrainingSchedule.Contracts
 {
     public interface IAllowedAnswers
     {

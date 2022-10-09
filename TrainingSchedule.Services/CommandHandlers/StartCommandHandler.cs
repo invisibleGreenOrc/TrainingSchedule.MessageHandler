@@ -17,11 +17,11 @@ namespace TrainingSchedule.Services.CommandHandlers
 
         private IApiClient _apiClient;
 
-        private IBotClient _botClient;
+        private IMessageSender _messageSender;
 
         private IUsersDataService _usersDataService; 
 
-        public StartCommandHandler(IApiClient apiClient, IBotClient botClient, IUsersDataService usersDataService)
+        public StartCommandHandler(IApiClient apiClient, IMessageSender messageSender, IUsersDataService usersDataService)
         {
             _commandToHandle = "/start";
 
@@ -31,7 +31,7 @@ namespace TrainingSchedule.Services.CommandHandlers
             _initialState = "Start";
 
             _apiClient = apiClient;
-            _botClient = botClient;
+            _messageSender = messageSender;
             _usersDataService = usersDataService;
         }
 
@@ -72,11 +72,11 @@ namespace TrainingSchedule.Services.CommandHandlers
 
             if (usersCount == 1)
             {
-                await _botClient.SendMessageAsync(chatId, $"Привет, {users.First().Name}, выбери команду из меню.");
+                await _messageSender.SendAsync(chatId, $"Привет, {users.First().Name}, выбери команду из меню.");
             }
             else
             {
-                await _botClient.SendMessageAsync(chatId, $"Добро пожаловать!" +
+                await _messageSender.SendAsync(chatId, $"Добро пожаловать!" +
                     $"\nКак тебя зовут?");
 
                 stateMachine.MoveToNextState();
@@ -87,7 +87,7 @@ namespace TrainingSchedule.Services.CommandHandlers
         {
             if (string.IsNullOrWhiteSpace(message))
             {
-                await _botClient.SendMessageAsync(chatId, "Имя не может быть пустым! Введите имя еще раз.");
+                await _messageSender.SendAsync(chatId, "Имя не может быть пустым! Введите имя еще раз.");
             }
             else
             {
@@ -97,7 +97,7 @@ namespace TrainingSchedule.Services.CommandHandlers
 
                 if (roles.Count == 0)
                 {
-                    await _botClient.SendMessageAsync(chatId, "Не найдены роли. Обратитесь к администратору приложения.");
+                    await _messageSender.SendAsync(chatId, "Не найдены роли. Обратитесь к администратору приложения.");
                 }
 
                 var answers = new AllowedAnswers
@@ -117,7 +117,7 @@ namespace TrainingSchedule.Services.CommandHandlers
                     answers.Items.Add(answerItem);
                 }
 
-                await _botClient.SendMessageAsync(chatId, $"Выбери свою роль", answers);
+                await _messageSender.SendAsync(chatId, $"Выбери свою роль", answers);
 
                 stateMachine.MoveToNextState();
             }
@@ -135,7 +135,7 @@ namespace TrainingSchedule.Services.CommandHandlers
                 };
 
                 await _apiClient.CreateUserAsync(newUser);
-                await _botClient.SendMessageAsync(chatId, $"{newUser.Name}, профиль успешно создан! Что будем делать дальше?");
+                await _messageSender.SendAsync(chatId, $"{newUser.Name}, профиль успешно создан! Что будем делать дальше?");
 
                 _usersDataService.RemoveUserName(botUserId);
 
@@ -143,7 +143,7 @@ namespace TrainingSchedule.Services.CommandHandlers
             }
             else
             {
-                await _botClient.SendMessageAsync(chatId, $"Выберите роль с помощью кнопки под сообщением выше.");
+                await _messageSender.SendAsync(chatId, $"Выберите роль с помощью кнопки под сообщением выше.");
             }
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace TrainingSchedule.Domain.Entities
+﻿using TrainingSchedule.Contracts;
+
+namespace TrainingSchedule.Domain.Entities
 {
     public class AllowedAnswers : IAllowedAnswers
     {

@@ -9,12 +9,12 @@ namespace TrainingSchedule.Services.BackgroundServices
     {
         private IApiClient _apiClient;
 
-        private IBotClient _botClient;
+        private IMessageSender _messageSender;
 
-        public NotificationService(IApiClient apiClient, IBotClient botClient)
+        public NotificationService(IApiClient apiClient, IMessageSender messageSender)
         {
             _apiClient = apiClient;
-            _botClient = botClient;
+            _messageSender = messageSender;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -56,7 +56,7 @@ namespace TrainingSchedule.Services.BackgroundServices
                             sb.AppendLine($"{lesson.Date:dd.MM.yyyy HH:mm} {discipline.Name}, сложность - {lesson.Difficulty}, тренер - {trainer.Name}");
                         }
 
-                        await _botClient.SendMessageAsync(user.BotUserId, sb.ToString());
+                        await _messageSender.SendAsync(user.BotUserId, sb.ToString());
                     }
                 }
 

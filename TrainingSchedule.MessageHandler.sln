@@ -13,13 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingSchedule.Services",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingSchedule.ConsoleApp", "TrainingSchedule.ConsoleApp\TrainingSchedule.ConsoleApp.csproj", "{279FC929-22E6-442E-8732-2F0D96FA2D9D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingSchedule.Telegram", "TrainingSchedule.TelegramClient\TrainingSchedule.Telegram.csproj", "{F68853DB-7C1C-4757-A3A7-4427583069C4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingSchedule.Domain", "TrainingSchedule.Domain\TrainingSchedule.Domain.csproj", "{0B5431A1-033B-4A3D-93EA-9C57D1D166E9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingSchedule.ApiClient", "TrainingSchedule.APIClient\TrainingSchedule.ApiClient.csproj", "{AC396E4C-6FA7-4F53-B573-112A7E1A78BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainingSchedule.Contracts", "TrainingSchedule.Contracts\TrainingSchedule.Contracts.csproj", "{E2D8879D-690E-4130-9C43-F53F6529D5E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingSchedule.Contracts", "TrainingSchedule.Contracts\TrainingSchedule.Contracts.csproj", "{E2D8879D-690E-4130-9C43-F53F6529D5E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainingSchedule.Rabbit", "TrainingSchedule.Rabbit\TrainingSchedule.Rabbit.csproj", "{09D89068-A65B-4937-9C51-AED01EB99A73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,6 @@ Global
 		{279FC929-22E6-442E-8732-2F0D96FA2D9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{279FC929-22E6-442E-8732-2F0D96FA2D9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{279FC929-22E6-442E-8732-2F0D96FA2D9D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F68853DB-7C1C-4757-A3A7-4427583069C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F68853DB-7C1C-4757-A3A7-4427583069C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F68853DB-7C1C-4757-A3A7-4427583069C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F68853DB-7C1C-4757-A3A7-4427583069C4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0B5431A1-033B-4A3D-93EA-9C57D1D166E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0B5431A1-033B-4A3D-93EA-9C57D1D166E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B5431A1-033B-4A3D-93EA-9C57D1D166E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,6 +47,10 @@ Global
 		{E2D8879D-690E-4130-9C43-F53F6529D5E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2D8879D-690E-4130-9C43-F53F6529D5E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E2D8879D-690E-4130-9C43-F53F6529D5E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09D89068-A65B-4937-9C51-AED01EB99A73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09D89068-A65B-4937-9C51-AED01EB99A73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09D89068-A65B-4937-9C51-AED01EB99A73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09D89068-A65B-4937-9C51-AED01EB99A73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,10 +58,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{703C5CD5-D2EE-444F-84DD-76B0BE31B4E0} = {A65FB6AF-9B0A-4BEF-84EB-1635A7E3ABDE}
 		{279FC929-22E6-442E-8732-2F0D96FA2D9D} = {1CA6493F-10C2-4362-90E0-43D74A337292}
-		{F68853DB-7C1C-4757-A3A7-4427583069C4} = {068DDE25-9165-4E39-BDA3-18A73D29F959}
 		{0B5431A1-033B-4A3D-93EA-9C57D1D166E9} = {A65FB6AF-9B0A-4BEF-84EB-1635A7E3ABDE}
 		{AC396E4C-6FA7-4F53-B573-112A7E1A78BF} = {068DDE25-9165-4E39-BDA3-18A73D29F959}
 		{E2D8879D-690E-4130-9C43-F53F6529D5E4} = {A65FB6AF-9B0A-4BEF-84EB-1635A7E3ABDE}
+		{09D89068-A65B-4937-9C51-AED01EB99A73} = {068DDE25-9165-4E39-BDA3-18A73D29F959}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8DCE4032-92E6-47D3-BE60-CFC1ADA0861C}

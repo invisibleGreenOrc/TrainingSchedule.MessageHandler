@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TrainingSchedule.ApiClient;
-using TrainingSchedule.Services;
-using TrainingSchedule.Services.CommandHandlers;
-using TrainingSchedule.Services.BackgroundServices;
-using TrainingSchedule.Telegram;
 using TrainingSchedule.Domain;
+using TrainingSchedule.Rabbit;
+using TrainingSchedule.Services;
+using TrainingSchedule.Services.BackgroundServices;
+using TrainingSchedule.Services.CommandHandlers;
 
 namespace TrainingSchedule.ConsoleApp
 {
@@ -17,9 +17,10 @@ namespace TrainingSchedule.ConsoleApp
                 .ConfigureServices((context, services) =>
                 {
                     services.AddHostedService<MessageProcessingService>();
-                    services.AddHostedService<NotificationService>();
+                    //services.AddHostedService<NotificationService>();
                     services.AddSingleton<IApiClient, TrainingScheduleApiClient>();
-                    services.AddSingleton<IBotClient, TelegramClient>();
+                    services.AddSingleton<IMessageSender, MessageProducer>();
+                    services.AddSingleton<IMessageReceiver, MessageConsumer>();
                     services.AddSingleton<ICommandHandler, StartCommandHandler>();
                     services.AddSingleton<ICommandHandler, CreateLessonCommandHandler>();
                     services.AddSingleton<ICommandHandler, ShowLessonsCommandHandler>();

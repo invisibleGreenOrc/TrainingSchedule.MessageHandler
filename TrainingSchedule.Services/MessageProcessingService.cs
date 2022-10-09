@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using TrainingSchedule.Contracts;
 using TrainingSchedule.Domain;
 using TrainingSchedule.Services.CommandHandlers;
 using TrainingSchedule.Services.FSM;
@@ -7,23 +8,23 @@ namespace TrainingSchedule.Services
 {
     public class MessageProcessingService : IHostedService
     {
-        private readonly IBotClient _botClient;
+        private readonly IMessageReceiver _messageReceiver;
 
         private FiniteStateMachineBuilder _stateMachineBuilder;
 
         private Dictionary<long, FiniteStateMachine> _usersStateMachines = new();
 
-        public MessageProcessingService(IBotClient botClient, IEnumerable<ICommandHandler> commandHandlers)
+        public MessageProcessingService(IMessageReceiver messageReceiver, IEnumerable<ICommandHandler> commandHandlers)
         {
-            _botClient = botClient;
-            _botClient.MessageReceived += HandleMessageAsync;
+            _messageReceiver = messageReceiver;
+            _messageReceiver.MessageReceived += HandleMessageAsync;
 
             _stateMachineBuilder = new FiniteStateMachineBuilder(commandHandlers);
         }
 
-        private async Task HandleMessageAsync(long botUserId, long chatId, string message)
+        private async Task HandleMessageAsync(MessageFromUser message)
         {
-            await GetStateMachineForUser(botUserId).ProcessMessage(botUserId, chatId, message);
+            await GetStateMachineForUser(message.BotUserId).ProcessMessage(message.BotUserId, message.ChatId, message.Body);
         }
 
         private FiniteStateMachine GetStateMachineForUser(long botUserId)
@@ -41,7 +42,8 @@ namespace TrainingSchedule.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await _botClient.StartAsync();
+            _messageReceiver.Start();
+            await Task.CompletedTask;
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

@@ -17,11 +17,11 @@ namespace TrainingSchedule.Services.CommandHandlers
 
         private IApiClient _apiClient;
 
-        private IBotClient _botClient;
+        private IMessageSender _messageSender;
 
         private IUsersDataService _usersDataService;
 
-        public CreateLessonCommandHandler(IApiClient apiClient, IBotClient botClient, IUsersDataService usersDataService)
+        public CreateLessonCommandHandler(IApiClient apiClient, IMessageSender messageSender, IUsersDataService usersDataService)
         {
             _commandToHandle = "/create_drill";
 
@@ -31,7 +31,7 @@ namespace TrainingSchedule.Services.CommandHandlers
             _initialState = "CreateLesson";
 
             _apiClient = apiClient;
-            _botClient = botClient;
+            _messageSender = messageSender;
             _usersDataService = usersDataService;
         }
 
@@ -86,11 +86,11 @@ namespace TrainingSchedule.Services.CommandHandlers
                     answers.Items.Add(answerItem);
                 }
 
-                await _botClient.SendMessageAsync(chatId, "Выбери дисциплину", answers);
+                await _messageSender.SendAsync(chatId, "Выбери дисциплину", answers);
             }
             else
             {
-                await _botClient.SendMessageAsync(chatId, "Дисциплины не созданы. Обратитесь к администратору приложения.");
+                await _messageSender.SendAsync(chatId, "Дисциплины не созданы. Обратитесь к администратору приложения.");
             }
 
             stateMachine.MoveToNextState();
@@ -125,13 +125,13 @@ namespace TrainingSchedule.Services.CommandHandlers
                             }
                 };
 
-                await _botClient.SendMessageAsync(chatId, "Выбери уровень", answers);
+                await _messageSender.SendAsync(chatId, "Выбери уровень", answers);
 
                 stateMachine.MoveToNextState();
             }
             else
             {
-                await _botClient.SendMessageAsync(chatId, $"Выберите дисциплину с помощью кнопки под сообщением выше.");
+                await _messageSender.SendAsync(chatId, $"Выберите дисциплину с помощью кнопки под сообщением выше.");
             }
         }
 
@@ -143,13 +143,13 @@ namespace TrainingSchedule.Services.CommandHandlers
                 lessonData.levelId = levelId;
                 _usersDataService.AddUserLesson(botUserId, lessonData);
 
-                await _botClient.SendMessageAsync(chatId, "Укажи дату занятия в формате dd.mm.yyyy");
+                await _messageSender.SendAsync(chatId, "Укажи дату занятия в формате dd.mm.yyyy");
 
                 stateMachine.MoveToNextState();
             }
             else
             {
-                await _botClient.SendMessageAsync(chatId, $"Выберите уровень с помощью кнопки под сообщением выше.");
+                await _messageSender.SendAsync(chatId, $"Выберите уровень с помощью кнопки под сообщением выше.");
             }
         }
 
@@ -176,7 +176,7 @@ namespace TrainingSchedule.Services.CommandHandlers
                 });
             }
 
-            await _botClient.SendMessageAsync(chatId, $"Выбери время", answers);
+            await _messageSender.SendAsync(chatId, $"Выбери время", answers);
 
             stateMachine.MoveToNextState();
         }
@@ -214,7 +214,7 @@ namespace TrainingSchedule.Services.CommandHandlers
             };
 
             await _apiClient.CreateLessonAsync(newLesson);
-            await _botClient.SendMessageAsync(chatId, $"Занятие создано {_usersDataService.GetUserLesson(botUserId)}. Что будем делать дальше?");
+            await _messageSender.SendAsync(chatId, $"Занятие создано {_usersDataService.GetUserLesson(botUserId)}. Что будем делать дальше?");
 
             _usersDataService.RemoveUserLesson(botUserId);
 

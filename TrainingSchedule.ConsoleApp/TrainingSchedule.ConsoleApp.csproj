@@ -13,7 +13,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TrainingSchedule.APIClient\TrainingSchedule.ApiClient.csproj" />
-    <ProjectReference Include="..\TrainingSchedule.TelegramClient\TrainingSchedule.Telegram.csproj" />
+    <ProjectReference Include="..\TrainingSchedule.Rabbit\TrainingSchedule.Rabbit.csproj" />
+    <ProjectReference Include="..\TrainingSchedule.Services\TrainingSchedule.Services.csproj" />
   </ItemGroup>
 
 </Project>
