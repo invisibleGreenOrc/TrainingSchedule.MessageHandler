@@ -25,6 +25,7 @@ namespace TrainingSchedule.ConsoleApp
                     services.AddSingleton<ICommandHandler, ShowLessonsCommandHandler>();
                     services.AddSingleton<ICommandHandler, LessonEnrollCommandHandler>();
                     services.AddSingleton<IUsersDataService, UsersDataService>();
+                    services.AddMemoryCache();
                 })
                 .Build();
 

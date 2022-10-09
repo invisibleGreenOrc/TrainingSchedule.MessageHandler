@@ -1,5 +1,5 @@
-﻿using RestSharp;
-using RestSharp.Serializers;
+﻿using Microsoft.Extensions.Caching.Memory;
+using RestSharp;
 using TrainingSchedule.Contracts;
 using TrainingSchedule.Domain;
 using TrainingSchedule.Domain.Entities;
@@ -9,10 +9,18 @@ namespace TrainingSchedule.ApiClient
     public class TrainingScheduleApiClient : IApiClient
     {
         private readonly RestClient _client;
+        private readonly IMemoryCache _memoryCache;
 
-        public TrainingScheduleApiClient()
+        public TrainingScheduleApiClient(IMemoryCache memoryCache)
         {
             _client = new RestClient("https://localhost:7228/api/");
+            _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+
+            _memoryCache.Set("user", "test");
+
+            Console.WriteLine("sdfsdfsdfsdfsdfsdfsdf");
+
+            Console.WriteLine(_memoryCache.Get<string>("user"));
         }
 
         public async Task<ICollection<Role>> GetRolesAsync()
